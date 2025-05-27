@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Note
+from .models import Note, Pet
 from . import db
 import json
 
@@ -55,3 +55,25 @@ def add_pet():
             return redirect(url_for('views.home'))
 
     return render_template("add_pet.html", user=current_user)
+
+@views.route("/pets", methods=['GET'])
+@login_required
+def get_all_pets():
+    name_query = request.args.get('name', '')
+
+    if name_query:
+        pets = Pet.query.filter(Pet.name.ilike(f"%{name_query}%")).all()
+    else:
+        pets = Pet.query.all()
+
+    return render_template("pets.html", user=current_user, pets=pets)    
+
+@views.route("/observations", methods=['GET'])
+@login_required
+def get_observations():
+    return render_template("observations.html", user=current_user)
+
+@views.route("/profile", methods=['GET'])
+@login_required
+def get_profile():
+    return render_template("profile.html", user=current_user)

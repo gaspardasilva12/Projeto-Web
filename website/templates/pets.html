@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}AdoPet{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h3 class="text-center">All Pets</h3>
+  <form method="GET" action="/pets" class="mb-4">
+    <div class="form-group">
+      <label for="name">Search by Pet Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        name="name"
+        placeholder="Enter pet name"
+        value="{{ request.args.get('name', '') }}"
+      />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Search</button>
+  </form>
+
+  {% if pets %}
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th>Name</th>
+          <th>Species</th>
+          <th>Age</th>
+          <th>Size</th>
+          <th>Description</th>
+          <th>Image</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pet in pets %}
+        <tr>
+          <td>{{ pet.name }}</td>
+          <td>{{ pet.species }}</td>
+          <td>{{ pet.age }}</td>
+          <td>{{ pet.size }}</td>
+          <td>{{ pet.description }}</td>
+          <td>
+            {% if pet.image %}
+              <img src="{{ pet.image }}" alt="{{ pet.name }}" width="100">
+            {% else %}
+              No image
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="text-muted">No pets found.</p>
+  {% endif %}
+</div>
+{% endblock %}
