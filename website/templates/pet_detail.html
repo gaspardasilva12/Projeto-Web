@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}AdoPet{% endblock %}
+{% block content %}
+
+<style>
+  body {
+    background: linear-gradient(135deg, #c0c8ce 0%, #869eb2 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  .card {
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+</style>
+<div class="col-md-6 col-lg-8 mx-auto">
+  <div class="card shadow border-primary">
+    <div class="card-body">
+      <h2 class="text-center mb-4">Pet Details</h2>
+      <ul class="list-group mb-3">
+        <li class="list-group-item"><strong>Name:</strong> {{ pet.name }}</li>
+        <li class="list-group-item"><strong>Species:</strong> {{ pet.species }}</li>
+        <li class="list-group-item"><strong>Age:</strong> {{ pet.age }}</li>
+        <li class="list-group-item"><strong>Size:</strong> {{ pet.size }}</li>
+        <li class="list-group-item"><strong>Description:</strong> {{ pet.description }}</li>
+        {% if pet.image %}
+        <li class="list-group-item"><img src="{{ pet.image }}" alt="{{ pet.name }}" width="150"></li>
+        {% endif %}
+      </ul>
+      <a href="{{ url_for('views.get_profile') }}" class="btn btn-primary">Back to Profile</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

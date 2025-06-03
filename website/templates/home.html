@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}AdoPet{% endblock %}
+{% block content %}
+
+<style>
+  body {
+    background: linear-gradient(135deg, #c0c8ce 0%, #869eb2 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+</style>
+
+<div style="display: flex; flex-direction: column; align-items: center; margin-top: 40px;">
+  <h2
+    style="width: 80vw; max-width: 600px; text-align: center; background-color: #1a237e; color: white; border-radius: 20px; padding: 24px 0; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+    Welcome to your Home!
+  </h2>
+  <p style="margin-top: 24px; font-size: 1.2rem; color: #333; max-width: 500px; text-align: center;">
+    Find your new best friend! Browse through several pets available for adoption and be part of this chain of goodness.
+  </p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #c0c8ce;
+        margin: 0;
+    }
+
+    .card {
+        max-width: 600px;
+        margin: 40px auto; 
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 32px 0; 
+    }
+
+    h1 {
+        text-align: center;
+        color: #20427d;
+        margin-bottom: 36px; 
+    }
+
+    .form-ong input,
+    .form-ong textarea {
+        width: 100%;
+        margin-bottom: 16px; 
+        border: 1px solid #b7c0c9;
+        border-radius: 4px;
+        padding: 10px; 
+        font-size: 16px; 
+    }
+
+    .form-ong button {
+        background: #243b64;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        width: 100%;
+        padding: 12px 0; 
+        margin-top: 10px; 
+        font-size: 16px;
+    }
+
+    .ong-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 32px; 
+    }
+
+    .ong-item {
+        background: #f7f9fa;
+        border: 1px solid #e0e4e8;
+        border-radius: 6px;
+        padding: 16px 18px; 
+        margin-bottom: 18px; 
+        font-size: 15px;
+    }
+
+    .btn-excluir {
+        background: #d34535;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        float: right;
+        padding: 8px 18px; 
+        font-size: 15px;
+        margin-left: 10px;
+    }
+
+    .no-ongs {
+        text-align: center;
+        color: #888;
+        padding: 18px 0; 
+        font-size: 16px;
+    }
+</style>
+
+<div class="card">
+    <div class="card-body">
+        <form class="form-ong" method="POST" action="{{ url_for('listar_ongs') }}">
+            <h1><strong>Register NGO</strong></h1>
+            <input type="text" name="nome" required placeholder="NGO Name">
+            <textarea name="descricao" rows="3" required placeholder="Description"></textarea>
+            <input type="email" name="email" required placeholder="Email">
+            <input type="tel" name="telefone" required placeholder="Phone">
+            <input type="text" name="endereco" required placeholder="Address">
+            <button type="submit">Register NGO</button>
+        </form>
+        
+        <ul class="ong-list" id="lista-ongs">
+            {% for ong in ongs %}
+            <li class="ong-item">
+                <div><strong>{{ ong.nome }}</strong></div>
+                <div>{{ ong.descricao }}</div>
+                <div><strong>Email:</strong> {{ ong.email }}</div>
+                <div><strong>Phone:</strong> {{ ong.telefone }}</div>
+                <div><strong>Address:</strong> {{ ong.endereco }}</div>
+                <form method="POST" action="{{ url_for('excluir_ong') }}" style="display:inline;">
+                    <input type="hidden" name="ong_id" value="{{ ong.id }}">
+                    <button type="button" class="btn-excluir" onclick="confirmarExclusao(this.form)">Delete</button>
+                </form>
+            </li>
+            {% else %}
+            <li class="no-ongs">No NGOs registered.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+
+<div id="modal-confirmacao"
+    style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); align-items:center; justify-content:center; z-index:9999;">
+    <div
+        style="background:#fff; padding:32px 40px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15); text-align:center;">
+        <p style="margin-bottom: 24px;">Are you sure you want to delete this NGO?</p>
+        <button onclick="enviarExclusao()"
+            style="background:#e74c3c; color:#fff; border:none; padding:10px 24px; border-radius:4px; margin-right:16px; font-size:16px;">Yes,
+            delete</button>
+        <button onclick="fecharModal()"
+            style="background:#ccc; color:#333; border:none; padding:10px 24px; border-radius:4px; font-size:16px;">Cancel</button>
+    </div>
+</div>
+
+<script>
+    let formParaExcluir = null;
+    function confirmarExclusao(form) {
+        formParaExcluir = form;
+        document.getElementById('modal-confirmacao').style.display = 'flex';
+    }
+    function fecharModal() {
+        document.getElementById('modal-confirmacao').style.display = 'none';
+        formParaExcluir = null;
+    }
+    function enviarExclusao() {
+        if (formParaExcluir) {
+            formParaExcluir.submit();
+        }
+        fecharModal();
+    }
+</script>
+{% endblock %}

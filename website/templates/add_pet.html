@@ -1,0 +1,63 @@
+{% extends "base.html" %}{% block title %}AdoPet{% endblock %}
+{% block content %}
+
+<style>
+  body {
+    background: linear-gradient(135deg, #c0c8ce 0%, #869eb2 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  .card {
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  .required-star {
+    color: #e74c3c;
+    font-size: 1em;
+    margin-left: 2px;
+  }
+</style>
+<div class="col-md-6 col-lg-8 mx-auto">
+  <div class="card shadow border-primary">
+    <div class="card-body">
+      <h3 class="text-center mb-4">Add a Pet</h3>
+      <form method="POST">
+        <div class="form-group">
+          <label for="name">Pet Name <span class="required-star">*</span></label>
+          <input type="text" class="form-control" id="name" name="name" placeholder="Enter pet name" required />
+        </div>
+        <div class="form-group">
+          <label for="species">Species <span class="required-star">*</span></label>
+          <input type="text" class="form-control" id="species" name="species"
+            placeholder="Enter species (e.g., Dog, Cat)" required />
+        </div>
+        <div class="form-group">
+          <label for="age">Age <span class="required-star">*</span></label>
+          <input type="number" class="form-control" id="age" name="age" placeholder="Enter pet age" required />
+        </div>
+        <div class="form-group">
+          <label for="size">Size <span class="required-star">*</span></label>
+          <input type="text" class="form-control" id="size" name="size"
+            placeholder="Enter pet size (e.g., Small, Medium, Large)" required />
+        </div>
+        <div class="form-group">
+          <label for="description">Description <span class="required-star">*</span></label>
+          <textarea class="form-control" id="description" name="description" rows="3"
+            placeholder="Enter pet description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="image">Image URL <span class="required-star">*</span></label>
+          <input type="text" class="form-control" id="image" name="image" placeholder="Enter image URL" required />
+        </div>
+        <br />
+        <div class="d-flex justify-content-center gap-2">
+          <button type="submit" class="btn btn-primary mr-2">Add Pet</button>
+          <a href="{{ url_for('views.home') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

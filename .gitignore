@@ -1,0 +1,56 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database
+*.sqlite3
+*.db
+
+# Flask instance folder (opcional, se usado)
+instance/
+
+# Environment variables / configs
+.env
+*.env
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# VS Code settings
+.vscode/
+
+# Pytest cache
+.pytest_cache/
+
+# Migrations (caso use Flask-Migrate ou Alembic e não queira versionar)
+migrations/
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+.cache
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter Notebook checkpoints (caso use notebooks no projeto)
+.ipynb_checkpoints/
+
+# Pip dependency logs
+pip-log.txt
+pip-delete-this-directory.txt

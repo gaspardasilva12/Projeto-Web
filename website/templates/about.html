@@ -1,0 +1,49 @@
+{% extends "base.html" %}{% block title %}Sobre - AdoPet{% endblock %}
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #c0c8ce 0%, #869eb2 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        margin-bottom: 20px;    
+    }
+    .card-body {
+        padding: 2rem;
+    }
+
+    .about-text {
+        text-align: justify;
+    }
+</style>
+<div class="container mt-5">
+    <div class="card shadow border-primary">
+        <div class="card-body">
+            <h2 class="text-center mb-4">About AdoPet</h2>
+            <div class="about-text">
+                <p>
+                    <strong>AdoPet</strong> is a platform dedicated to connecting people who want to adopt pets that need
+                    a new home. Our goal is to make the adoption process easier, making it simple, safe and transparent
+                    for everyone involved.
+                </p>
+                <p>
+                    Here you can search for available pets, filter by name, species, age and size, as well as view
+                    details and photos of the animals. If you have a pet to donate, you can also easily register it on
+                    our platform. </p>
+                <p>
+                    Join us in this mission to provide a better life for many animals!
+                </p>
+            </div>
+            <hr>
+            <p class="text-muted text-center">Developed by Gaspar and team &copy; 2025</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

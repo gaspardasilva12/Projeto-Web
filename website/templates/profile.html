@@ -1,0 +1,112 @@
+{% extends "base.html" %}{% block title %}AdoPet{% endblock %}
+{% block content %}
+
+<style>
+  body {
+    background: linear-gradient(135deg, #c0c8ce 0%, #869eb2 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  .card {
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    background-color: #1a237e !important;
+  }
+</style>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h3 class="text-center">User Profile</h3>
+        </div>
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5>Personal Information</h5>
+              <p><strong>Name:</strong> {{ user.first_name }}</p>
+              <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+              <p><strong>Email:</strong> {{ user.email }}</p>
+              <p><strong>Phone:</strong> {{ user.phone }}</p>
+              <p><strong>Address:</strong> {{ user.address }}</p>
+            </div>
+            <div class="col-md-6 text-right">
+              <a href="{{ url_for('views.edit_profile') }}" class="btn btn-info mb-2">
+                <i class="fa fa-user-edit"></i> Edit Profile
+              </a>
+
+            </div>
+          </div>
+          <hr>
+          <h5 class="mb-3">My Pets</h5>
+          {% if pets %}
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Name</th>
+                  <th>Species</th>
+                  <th>Age</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pet in pets %}
+                <tr>
+                  <td>{{ pet.name }}</td>
+                  <td>{{ pet.species }}</td>
+                  <td>{{ pet.age }}</td>
+                  <td>
+                    <a href="{{ url_for('views.view_pet', pet_id=pet.id) }}" class="btn btn-sm btn-primary">View</a>
+                    <a href="{{ url_for('views.edit_pet', pet_id=pet.id) }}" class="btn btn-sm btn-warning">Edit</a>
+
+                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                      data-target="#deleteModal{{ pet.id }}">
+                      Delete
+                    </button>
+                    <div class="modal fade" id="deleteModal{{ pet.id }}" tabindex="-1" role="dialog"
+                      aria-labelledby="deleteModalLabel{{ pet.id }}" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel{{ pet.id }}">Confirm Deletion</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure want to delete the Pet? <strong>{{ pet.name }}</strong>?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <form method="POST" action="{{ url_for('views.delete_pet', pet_id=pet.id) }}"
+                              style="display:inline;">
+                              <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="alert alert-info">
+            You haven't added any pets yet. <a href="/add-pet" class="alert-link">Add your first pet</a>.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
