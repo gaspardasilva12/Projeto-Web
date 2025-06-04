@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import logout_user, login_required, current_user
 from .models import Observation, Pet, Ong
-from . import db
+from . import db, mail
 import json
 from werkzeug.utils import secure_filename
 import os
+from  flask_mail import Message
 
 views = Blueprint('views', __name__)
 UPLOAD_FOLDER = 'website/static/uploads'
@@ -265,4 +266,12 @@ def add_pet():
             return redirect(url_for('views.my_pets'))
 
     return render_template("add_pet.html", user=current_user)
+
+@views.route('/send-email', methods=['POST'])
+@login_required
+def send_email():
+    msg = Message('password recovery', recipients=[request.form['email']])
+    msg.body = f"Choose your new password, by clicking on the link: {url_for('recover_password', _external=True)}"
+    mail.send(msg)
+    
                 
