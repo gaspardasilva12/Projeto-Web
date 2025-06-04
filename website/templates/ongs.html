@@ -79,7 +79,7 @@
 
 <div class="card">
     <div class="card-body">
-        <form class="form-ong" method="POST" action="{{ url_for('listar_ongs') }}">
+        <form class="form-ong" method="POST" action="{{ url_for('views.listar_ongs') }}">
             <h1><strong>Register NGO</strong></h1>
             <input type="text" name="nome" required placeholder="NGO Name">
             <textarea name="descricao" rows="3" required placeholder="Description"></textarea>
@@ -97,7 +97,7 @@
                 <div><strong>Email:</strong> {{ ong.email }}</div>
                 <div><strong>Phone:</strong> {{ ong.telefone }}</div>
                 <div><strong>Address:</strong> {{ ong.endereco }}</div>
-                <form method="POST" action="{{ url_for('excluir_ong') }}" style="display:inline;">
+                <form method="POST" action="{{ url_for('views.excluir_ong') }}" style="display:inline;">
                     <input type="hidden" name="ong_id" value="{{ ong.id }}">
                     <button type="button" class="btn-excluir" onclick="confirmarExclusao(this.form)">Delete</button>
                 </form>

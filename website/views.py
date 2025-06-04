@@ -1,11 +1,14 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import logout_user, login_required, current_user
-from .models import Observation, Pet
+from .models import Observation, Pet, Ong
 from . import db
 import json
+from werkzeug.utils import secure_filename
+import os
 
 views = Blueprint('views', __name__)
-
+UPLOAD_FOLDER = 'website/static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 @views.route('/', methods=['GET'])
 @login_required
@@ -43,7 +46,8 @@ def delete_observation():
         return jsonify({'success': True})
     return jsonify({'success': False})
 
-@views.route('/add-pet', methods=['GET', 'POST'])
+'''
+views.route('/add-pet', methods=['GET', 'POST'])
 @login_required
 def add_pet():
     if request.method == 'POST':
@@ -72,6 +76,7 @@ def add_pet():
             return redirect(url_for('views.my_pets'))
 
     return render_template("add_pet.html", user=current_user)
+'''
 
 @views.route("/pets", methods=['GET'])
 @login_required
@@ -189,3 +194,75 @@ def adopt_pet(pet_id):
         flash('This pet has already been adopted.', category='error')
     return redirect(url_for('views.adoption'))
 
+@views.route('/ongs', methods=['GET', 'POST'])
+@login_required
+def listar_ongs():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        descricao = request.form['descricao']
+        email = request.form['email']
+        telefone = request.form['telefone']
+        endereco = request.form['endereco']
+
+        nova_ong = Ong(
+            nome=nome,
+            descricao=descricao,
+            email=email,
+            telefone=telefone,
+            endereco=endereco
+        )
+        db.session.add(nova_ong)
+        db.session.commit()
+        return redirect(url_for('views.listar_ongs'))
+
+    ongs = Ong.query.all()
+    return render_template('ongs.html', ongs=ongs)
+
+@views.route('/excluir_ong', methods=['POST'])
+@login_required
+def excluir_ong():
+    ong_id = request.form['ong_id']
+    ong = Ong.query.get(ong_id)
+    if ong:
+        db.session.delete(ong)
+        db.session.commit()
+    return redirect(url_for('views.listar_ongs'))
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@views.route('/add_pet', methods=['GET', 'POST'])
+@login_required
+def add_pet():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        species = request.form.get('species')
+        age = request.form.get('age')
+        size = request.form.get('size')
+        description = request.form.get('description')
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                image_url = url_for('static', filename=f'uploads/{filename}')
+
+        if not name or not species or not age:
+            flash('All fields are required!', category='error')
+        else:
+            new_pet = Pet(
+                name=name,
+                species=species,
+                age=int(age),
+                size=size,
+                description=description,
+                image=image_url,
+                user_id=current_user.id
+            )
+            db.session.add(new_pet)
+            db.session.commit()
+            flash('Pet added successfully!', category='success')
+            return redirect(url_for('views.my_pets'))
+
+    return render_template("add_pet.html", user=current_user)
+                

@@ -4,6 +4,7 @@ from os import path
 from flask_login import LoginManager, current_user
 from werkzeug.utils import secure_filename
 import os
+from  flask_mail import Mail, Message
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
@@ -41,53 +42,14 @@ def create_app():
     def inject_user():
         return dict(user=current_user)
 
-    @app.route('/ongs', methods=['GET', 'POST'])
-    def listar_ongs():
-        if request.method == 'POST':
-            nome = request.form['nome']
-            descricao = request.form['descricao']
-            email = request.form['email']
-            telefone = request.form['telefone']
-            endereco = request.form['endereco']
-
-            nova_ong = Ong(
-                nome=nome,
-                descricao=descricao,
-                email=email,
-                telefone=telefone,
-                endereco=endereco
-            )
-            db.session.add(nova_ong)
-            db.session.commit()
-            return redirect(url_for('listar_ongs'))
-
-        ongs = Ong.query.all()
-        return render_template('ongs.html', ongs=ongs)
-
-    @app.route('/excluir_ong', methods=['POST'])
-    def excluir_ong():
-        ong_id = request.form['ong_id']
-        ong = Ong.query.get(ong_id)
-        if ong:
-            db.session.delete(ong)
-            db.session.commit()
-        return redirect(url_for('listar_ongs'))
-
-    def allowed_file(filename):
-        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-    @app.route('/add_pet', methods=['GET', 'POST'])
-    def add_pet():
-        if request.method == 'POST':
-            # ...pegar outros campos...
-            if 'image' in request.files:
-                file = request.files['image']
-                if file and allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
-                    file.save(os.path.join(UPLOAD_FOLDER, filename))
-                    image_url = url_for('static', filename=f'uploads/{filename}')
-                    # Salve image_url no banco de dados
-            # ...restante do código...
+    
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = 'gelsonhiluca@gmail.com'
+    app.config['MAIL_PASSWORD'] = 'gelson123'
+    app.config['MAIL_DEFAULT_SENDER'] = 'gelsonhiluca@gmail.com'
+    mail = Mail(app)
 
     return app
 
