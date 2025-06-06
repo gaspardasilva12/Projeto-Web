@@ -4,9 +4,10 @@ from os import path
 from flask_login import LoginManager, current_user
 from werkzeug.utils import secure_filename
 import os
-from  flask_mail import Mail, Message
+from flask_mail import Mail, Message
 
 db = SQLAlchemy()
+mail = Mail()  # moved here for module-level import
 DB_NAME = "database.db"
 UPLOAD_FOLDER = 'website/static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -14,7 +15,9 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'hjshjhdjah kjshkjdhjs'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    # Define absolute path of the database
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(app.root_path, DB_NAME)}'
+    
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -22,6 +25,7 @@ def create_app():
 
     from .models import User, Ong, Pet, Observation
 
+    # Create database tables if they don't exist
     with app.app_context():
         db.create_all()
 
@@ -42,19 +46,19 @@ def create_app():
     def inject_user():
         return dict(user=current_user)
 
-    
+    # Mail configuration
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USERNAME'] = 'gelsonhiluca@gmail.com'
     app.config['MAIL_PASSWORD'] = 'gelson123'
     app.config['MAIL_DEFAULT_SENDER'] = 'gelsonhiluca@gmail.com'
-    mail = Mail(app)
+    mail.init_app(app)  # initialize mail with the app
 
     return app
 
 def create_database(app):
-    db_path = path.join('website', DB_NAME)
+    db_path = os.path.join(app.root_path, DB_NAME)
     if not path.exists(db_path):
         with app.app_context():
             db.create_all()

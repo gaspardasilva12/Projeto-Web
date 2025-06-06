@@ -241,6 +241,9 @@ def add_pet():
         age = request.form.get('age')
         size = request.form.get('size')
         description = request.form.get('description')
+        
+        # Initialize image_url in case no file is uploaded.
+        image_url = None  
         if 'image' in request.files:
             file = request.files['image']
             if file and allowed_file(file.filename):
@@ -271,7 +274,16 @@ def add_pet():
 @login_required
 def send_email():
     msg = Message('password recovery', recipients=[request.form['email']])
-    msg.body = f"Choose your new password, by clicking on the link: {url_for('recover_password', _external=True)}"
+    msg.body = f"Choose your new password, by clicking on the link: {url_for('views.recover_password', _external=True)}"
     mail.send(msg)
-    
-                
+    flash('Recovery email sent!', category='success')
+    return redirect(url_for('views.home'))
+
+@views.route('/recover_password', methods=['GET', 'POST'])
+def recover_password():
+    if request.method == 'POST':
+        # Aqui deve ser implementada a lógica de redefinição da senha.
+        flash('Your password has been reset. Please login with your new password.', category='success')
+        return redirect(url_for('auth.login'))
+    return render_template('recover_password.html')
+
