@@ -238,35 +238,35 @@ def add_pet():
     if request.method == 'POST':
         name = request.form.get('name')
         species = request.form.get('species')
-        age = request.form.get('age')
+        age = int(request.form.get('age'))
         size = request.form.get('size')
         description = request.form.get('description')
-        
-        # Initialize image_url in case no file is uploaded.
-        image_url = None  
-        if 'image' in request.files:
-            file = request.files['image']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
-                image_url = url_for('static', filename=f'uploads/{filename}')
 
-        if not name or not species or not age:
-            flash('All fields are required!', category='error')
+        # Verifica se uma imagem foi enviada
+        image_file = request.files.get('image')
+        if image_file and image_file.filename != '':
+            image_filename = secure_filename(image_file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+            image_file.save(filepath)
         else:
-            new_pet = Pet(
-                name=name,
-                species=species,
-                age=int(age),
-                size=size,
-                description=description,
-                image=image_url,
-                user_id=current_user.id
-            )
-            db.session.add(new_pet)
-            db.session.commit()
-            flash('Pet added successfully!', category='success')
-            return redirect(url_for('views.my_pets'))
+            # Atribui uma imagem padrão caso nenhuma imagem seja enviada
+            image_filename = 'default_pet.jpg'
+        
+        pet = Pet(
+            name=name,
+            species=species,
+            age=age,
+            size=size,
+            description=description,
+            image=image_filename,
+            is_adopted=False,
+            user_id=current_user.id
+        )
+        
+        db.session.add(pet)
+        db.session.commit()
+        flash('Pet added successfully!', category='success')
+        return redirect(url_for('views.my_pets'))
 
     return render_template("add_pet.html", user=current_user)
 
