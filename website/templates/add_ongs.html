@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #c0c8ce;
+        margin: 0;
+    }
+
+    .card {
+        max-width: 600px;
+        margin: 40px auto; 
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 32px 0; 
+    }
+
+    h1 {
+        text-align: center;
+        color: #20427d;
+        margin-bottom: 36px; 
+    }
+
+    .form-ong input,
+    .form-ong textarea {
+        width: 100%;
+        margin-bottom: 16px; 
+        border: 1px solid #b7c0c9;
+        border-radius: 4px;
+        padding: 10px; 
+        font-size: 16px; 
+    }
+
+    .form-ong button {
+        background: #243b64;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        width: 100%;
+        padding: 12px 0; 
+        margin-top: 10px; 
+        font-size: 16px;
+    }
+
+    .ong-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 32px; 
+    }
+
+    .ong-item {
+        background: #f7f9fa;
+        border: 1px solid #e0e4e8;
+        border-radius: 6px;
+        padding: 16px 18px; 
+        margin-bottom: 18px; 
+        font-size: 15px;
+    }
+
+    .btn-excluir {
+        background: #d34535;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        float: right;
+        padding: 8px 18px; 
+        font-size: 15px;
+        margin-left: 10px;
+    }
+
+    .no-ongs {
+        text-align: center;
+        color: #888;
+        padding: 18px 0; 
+        font-size: 16px;
+    }
+</style>
+
+<div class="card">
+    <div class="card-body">
+        <form class="form-ong" method="POST" action="{{ url_for('views.criar_ongs') }}">
+            <h1><strong>Register NGO</strong></h1>
+            <input type="text" name="nome" required placeholder="NGO Name">
+            <textarea name="descricao" rows="3" required placeholder="Description"></textarea>
+            <input type="email" name="email" required placeholder="Email">
+            <input type="tel" name="telefone" required placeholder="Phone">
+            <input type="text" name="endereco" required placeholder="Address">
+            <button type="submit">Register NGO</button>
+        </form>
+</div>
+</script>
+{% endblock %}

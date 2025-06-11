@@ -16,7 +16,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def home():
     return render_template("home.html", user=current_user)
 
-
+#CRUD Observações
 @views.route('/observations', methods=['GET', 'POST'])
 @login_required
 def observations():
@@ -34,7 +34,6 @@ def observations():
     user_observations = Observation.query.filter_by(user_id=current_user.id).all()
     return render_template("observations.html", user=current_user, observations=user_observations)
 
-
 @views.route('/delete-observation', methods=['POST'])
 @login_required
 def delete_observation():
@@ -47,37 +46,46 @@ def delete_observation():
         return jsonify({'success': True})
     return jsonify({'success': False})
 
-'''
-views.route('/add-pet', methods=['GET', 'POST'])
+###########################################################################################################
+#CRUD Pets
+
+@views.route('/add_pet', methods=['GET', 'POST'])
 @login_required
 def add_pet():
     if request.method == 'POST':
         name = request.form.get('name')
         species = request.form.get('species')
-        age = request.form.get('age')
+        age = int(request.form.get('age'))
         size = request.form.get('size')
         description = request.form.get('description')
-        image = request.form.get('image')
 
-        if not name or not species or not age:
-            flash('All fields are required!', category='error')
+        # Verifica se uma imagem foi enviada
+        image_file = request.files.get('image')
+        if image_file and image_file.filename != '':
+            image_filename = secure_filename(image_file.filename)
+            filepath = os.path.join(UPLOAD_FOLDER, image_filename)
+            image_file.save(filepath)
         else:
-            new_pet = Pet(
-                name=name,
-                species=species,
-                age=int(age),
-                size=size,
-                description=description,
-                image=image,
-                user_id=current_user.id
-            )
-            db.session.add(new_pet)
-            db.session.commit()
-            flash('Pet added successfully!', category='success')
-            return redirect(url_for('views.my_pets'))
+            # Atribui uma imagem padrão caso nenhuma imagem seja enviada
+            image_filename = 'default_pet.jpg'
+        
+        pet = Pet(
+            name=name,
+            species=species,
+            age=age,
+            size=size,
+            description=description,
+            image=image_filename,
+            is_adopted=False,
+            user_id=current_user.id
+        )
+        
+        db.session.add(pet)
+        db.session.commit()
+        flash('Pet added successfully!', category='success')
+        return redirect(url_for('views.my_pets'))
 
     return render_template("add_pet.html", user=current_user)
-'''
 
 @views.route("/pets", methods=['GET'])
 @login_required
@@ -133,6 +141,9 @@ def delete_pet(pet_id):
     db.session.commit()
     flash('Pet deleted successfully!', 'success')
     return redirect(url_for('views.get_profile'))
+
+###########################################################################################################
+#CRUD Perfil
 
 @views.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -195,9 +206,12 @@ def adopt_pet(pet_id):
         flash('This pet has already been adopted.', category='error')
     return redirect(url_for('views.adoption'))
 
-@views.route('/ongs', methods=['GET', 'POST'])
+###########################################################################################################
+#CRUD ONG
+
+@views.route('/add-ong', methods=['GET', 'POST'])
 @login_required
-def listar_ongs():
+def criar_ongs():
     if request.method == 'POST':
         nome = request.form['nome']
         descricao = request.form['descricao']
@@ -213,11 +227,48 @@ def listar_ongs():
             endereco=endereco
         )
         db.session.add(nova_ong)
+        print(nova_ong)
         db.session.commit()
         return redirect(url_for('views.listar_ongs'))
 
     ongs = Ong.query.all()
-    return render_template('ongs.html', ongs=ongs)
+    return render_template('add_ongs.html', ongs=ongs)
+
+@views.route('/ongs/<int:ong_id>', methods=['GET'])
+@login_required
+def view_ong(ong_id):
+    ong = Ong.query.get_or_404(ong_id)
+    return render_template('ong_detail.html', user=current_user, ong=ong)
+
+@views.route("/ongs", methods=['GET'])
+@login_required
+def listar_ongs():
+    name_query = request.args.get('nome', '')
+
+    if name_query:
+        ongs = Ong.query.filter(Ong.nome.ilike(f"%{name_query}%")).all()
+    else:
+        ongs = Ong.query.all()
+
+    return render_template("ongs.html", user=current_user, ongs=ongs) 
+
+@views.route('/ongs/<int:ong_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_ong(ong_id):
+    ong = Ong.query.get_or_404(ong_id)
+    if ong.user_id != current_user.id:
+        flash('You do not have permission to edit this pet.', 'error')
+        return redirect(url_for('views.get_all_pets'))
+    if request.method == 'POST':
+        ong.nome = request.form.get('nome')
+        ong.descricao = request.form.get('descricao')
+        ong.email = request.form.get('email')
+        ong.telefone = request.form.get('telefone')
+        ong.endereco = request.form.get('endereco')
+        db.session.commit()
+        flash('ONG updated successfully!', 'success')
+        return redirect(url_for('views.get_profile'))
+    return render_template('ongs.html', user=current_user, ong=ong)
 
 @views.route('/excluir_ong', methods=['POST'])
 @login_required
@@ -232,43 +283,7 @@ def excluir_ong():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@views.route('/add_pet', methods=['GET', 'POST'])
-@login_required
-def add_pet():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        species = request.form.get('species')
-        age = int(request.form.get('age'))
-        size = request.form.get('size')
-        description = request.form.get('description')
 
-        # Verifica se uma imagem foi enviada
-        image_file = request.files.get('image')
-        if image_file and image_file.filename != '':
-            image_filename = secure_filename(image_file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
-            image_file.save(filepath)
-        else:
-            # Atribui uma imagem padrão caso nenhuma imagem seja enviada
-            image_filename = 'default_pet.jpg'
-        
-        pet = Pet(
-            name=name,
-            species=species,
-            age=age,
-            size=size,
-            description=description,
-            image=image_filename,
-            is_adopted=False,
-            user_id=current_user.id
-        )
-        
-        db.session.add(pet)
-        db.session.commit()
-        flash('Pet added successfully!', category='success')
-        return redirect(url_for('views.my_pets'))
-
-    return render_template("add_pet.html", user=current_user)
 
 @views.route('/send-email', methods=['POST'])
 @login_required
