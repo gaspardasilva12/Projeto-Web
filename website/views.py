@@ -270,10 +270,10 @@ def edit_ong(ong_id):
         return redirect(url_for('views.get_profile'))
     return render_template('ongs.html', user=current_user, ong=ong)
 
-@views.route('/excluir_ong', methods=['POST'])
+@views.route('/excluir_ong/<int:ong_id>', methods=['POST'])
 @login_required
-def excluir_ong():
-    ong_id = request.form['ong_id']
+def excluir_ong(ong_id):
+    # ong_id = request.form['ong_id']
     ong = Ong.query.get(ong_id)
     if ong:
         db.session.delete(ong)
@@ -301,3 +301,5 @@ def recover_password():
         flash('Your password has been reset. Please login with your new password.', category='success')
         return redirect(url_for('auth.login'))
     return render_template('recover_password.html')
+
+
