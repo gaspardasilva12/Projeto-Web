@@ -63,19 +63,21 @@ body {
             </thead>
             <tbody>
             {% for ong in ongs %}
-            <li class="ong-item">
-                <div><strong>{{ ong.nome }}</strong></div>
-                <div>{{ ong.descricao }}</div>
-                <div><strong>Email:</strong> {{ ong.email }}</div>
-                <div><strong>Phone:</strong> {{ ong.telefone }}</div>
-                <div><strong>Address:</strong> {{ ong.endereco }}</div>
-                <form method="POST" action="{{ url_for('views.excluir_ong') }}" style="display:inline;">
-                    <input type="hidden" name="ong_id" value="{{ ong.id }}">
-                    <button type="button" class="btn-excluir" onclick="confirmarExclusao(this.form)">Delete</button>
+            <tr>
+                <td>{{ ong.nome }}</td>
+                <td>{{ ong.descricao }}</td>
+                <td>{{ ong.email }}</td>
+                <td>{{ ong.telefone }}</td>
+                <td>{{ ong.endereco }}</td>
+                <td>
+                <a href="/ongs/{{ ong.id }}" class="btn btn-info btn-sm">View</a>
+                {% if user.is_authenticated %}
+                <form method="POST" action="/excluir_ong/{{ ong.id }}" class="delete-ong-form" style="display:inline;">
+                    <button type="button" class="btn btn-danger btn-sm delete-ong-btn">Delete</button>
                 </form>
-            </li>
-            {% else %}
-            <li class="no-ongs">No NGOs registered.</li>
+                {% endif %}
+                </td>
+            </tr>
             {% endfor %}
             </tbody>
         </table>

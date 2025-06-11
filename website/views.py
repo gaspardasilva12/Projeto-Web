@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, current_app
+from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import logout_user, login_required, current_user
 from .models import Observation, Pet, Ong
 from . import db, mail
 import json
 from werkzeug.utils import secure_filename
 import os
-from flask_mail import Message
+from  flask_mail import Message
 
 views = Blueprint('views', __name__)
 UPLOAD_FOLDER = 'website/static/uploads'
@@ -99,20 +99,17 @@ def get_all_pets():
 
     return render_template("my_pets.html", user=current_user, pets=pets)    
 
-
 @views.route('/my-pets', methods=['GET'])
 @login_required
 def my_pets():
     pets = current_user.pets
     return render_template("my_pets.html", user=current_user, pets=pets)
 
-
 @views.route('/pets/<int:pet_id>', methods=['GET'])
 @login_required
 def view_pet(pet_id):
     pet = Pet.query.get_or_404(pet_id)
     return render_template('pet_detail.html', user=current_user, pet=pet)
-
 
 @views.route('/pets/<int:pet_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -133,7 +130,6 @@ def edit_pet(pet_id):
         return redirect(url_for('views.get_profile'))
     return render_template('edit_pet.html', user=current_user, pet=pet)
 
-
 @views.route('/delete-pet/<int:pet_id>', methods=['POST'])
 @login_required
 def delete_pet(pet_id):
@@ -145,6 +141,9 @@ def delete_pet(pet_id):
     db.session.commit()
     flash('Pet deleted successfully!', 'success')
     return redirect(url_for('views.get_profile'))
+
+###########################################################################################################
+#CRUD Perfil
 
 @views.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -162,13 +161,15 @@ def get_profile():
         return redirect(url_for('views.get_profile'))
     return render_template("profile.html", user=user, pets=pets)  
 
-
 @views.route('/delete-account', methods=['POST'])
 @login_required
 def delete_account():
-    flash('Account deleted successfully!', 'success')
-    return redirect(url_for('views.home'))
-
+    user = current_user._get_current_object()  
+    db.session.delete(user)
+    db.session.commit()
+    logout_user()
+    flash('Account deleted successfully!', category='success')
+    return redirect(url_for('auth.login'))
 
 @views.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
@@ -184,17 +185,14 @@ def edit_profile():
         return redirect(url_for('views.get_profile'))
     return render_template('edit_profile.html', user=current_user)
 
-
 @views.route("/about")
 def about():
     return render_template("about.html")
-
 
 @views.route('/adoption')
 def adoption():
     pets = Pet.query.all()
     return render_template('adoption.html', pets=pets)
-
 
 @views.route('/adopt-pet/<int:pet_id>', methods=['POST'])
 @login_required
@@ -208,7 +206,10 @@ def adopt_pet(pet_id):
         flash('This pet has already been adopted.', category='error')
     return redirect(url_for('views.adoption'))
 
-@views.route('/ongs', methods=['GET', 'POST'])
+###########################################################################################################
+#CRUD ONG
+
+@views.route('/add-ong', methods=['GET', 'POST'])
 @login_required
 def criar_ongs():
     if request.method == 'POST':
@@ -269,7 +270,6 @@ def edit_ong(ong_id):
         return redirect(url_for('views.get_profile'))
     return render_template('ongs.html', user=current_user, ong=ong)
 
-
 @views.route('/excluir_ong', methods=['POST'])
 @login_required
 def excluir_ong():
@@ -280,47 +280,9 @@ def excluir_ong():
         db.session.commit()
     return redirect(url_for('views.listar_ongs'))
 
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@views.route('/add_pet', methods=['GET', 'POST'])
-@login_required
-def add_pet():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        species = request.form.get('species')
-        age = int(request.form.get('age'))
-        size = request.form.get('size')
-        description = request.form.get('description')
-
-        # Verifica se uma imagem foi enviada
-        image_file = request.files.get('image')
-        if image_file and image_file.filename != '':
-            image_filename = secure_filename(image_file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
-            image_file.save(filepath)
-        else:
-            # Atribui uma imagem padrão caso nenhuma imagem seja enviada
-            image_filename = 'default_pet.jpg'
-        
-        pet = Pet(
-            name=name,
-            species=species,
-            age=age,
-            size=size,
-            description=description,
-            image=image_filename,
-            is_adopted=False,
-            user_id=current_user.id
-        )
-        
-        db.session.add(pet)
-        db.session.commit()
-        flash('Pet added successfully!', category='success')
-        return redirect(url_for('views.my_pets'))
-
-    return render_template("add_pet.html", user=current_user)
 
 
 @views.route('/send-email', methods=['POST'])
@@ -332,18 +294,10 @@ def send_email():
     flash('Recovery email sent!', category='success')
     return redirect(url_for('views.home'))
 
-
 @views.route('/recover_password', methods=['GET', 'POST'])
 def recover_password():
     if request.method == 'POST':
-        # Implementar a lógica de redefinição da senha.
+        # Aqui deve ser implementada a lógica de redefinição da senha.
         flash('Your password has been reset. Please login with your new password.', category='success')
         return redirect(url_for('auth.login'))
     return render_template('recover_password.html')
-
-
-@views.route('/update_ong', methods=['GET', 'POST'])
-def atualizar_ong():
-    # ...existing code...
-    return render_template('update_ong.html')
-
