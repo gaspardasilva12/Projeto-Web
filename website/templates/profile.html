@@ -1,4 +1,5 @@
-{% extends "base.html" %}{% block title %}AdoPet{% endblock %}
+{% extends "base.html" %}
+{% block title %}AdoPet{% endblock %}
 {% block content %}
 
 <style>
@@ -27,6 +28,7 @@
           <h3 class="text-center">User Profile</h3>
         </div>
         <div class="card-body">
+          <!-- Seção de informações pessoais -->
           <div class="row mb-4">
             <div class="col-md-6">
               <h5>Personal Information</h5>
@@ -40,10 +42,15 @@
               <a href="{{ url_for('views.edit_profile') }}" class="btn btn-info mb-2">
                 <i class="fa fa-user-edit"></i> Edit Profile
               </a>
+              <!-- Botão Delete Account posicionado logo abaixo -->
 
+              <button type="button" class="btn btn-danger mb-2" data-toggle="modal" data-target="#deleteAccountModal">
+                Delete Account
+              </button>
             </div>
           </div>
           <hr>
+          <!-- Seção de Pets do Usuário -->
           <h5 class="mb-3">My Pets</h5>
           {% if pets %}
           <div class="table-responsive">
@@ -65,11 +72,11 @@
                   <td>
                     <a href="{{ url_for('views.view_pet', pet_id=pet.id) }}" class="btn btn-sm btn-primary">View</a>
                     <a href="{{ url_for('views.edit_pet', pet_id=pet.id) }}" class="btn btn-sm btn-warning">Edit</a>
-
                     <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                       data-target="#deleteModal{{ pet.id }}">
                       Delete
                     </button>
+                    <!-- Delete Pet Modal -->
                     <div class="modal fade" id="deleteModal{{ pet.id }}" tabindex="-1" role="dialog"
                       aria-labelledby="deleteModalLabel{{ pet.id }}" aria-hidden="true">
                       <div class="modal-dialog" role="document">
@@ -81,7 +88,7 @@
                             </button>
                           </div>
                           <div class="modal-body">
-                            Are you sure want to delete the Pet? <strong>{{ pet.name }}</strong>?
+                            Are you sure you want to delete the pet <strong>{{ pet.name }}</strong>?
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -101,7 +108,8 @@
           </div>
           {% else %}
           <div class="alert alert-info">
-            You haven't added any pets yet. <a href="/add-pet" class="alert-link">Add your first pet</a>.
+            You haven't added any pets yet. <a href="{{ url_for('views.add_pet') }}" class="alert-link">Add your first
+              pet</a>.
           </div>
           {% endif %}
         </div>
@@ -109,4 +117,29 @@
     </div>
   </div>
 </div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" role="dialog" aria-labelledby="deleteAccountModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="deleteAccountModalLabel">Delete Account</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete your account? This action cannot be undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <form action="{{ url_for('views.delete_account') }}" method="POST" style="display:inline;">
+          <button type="submit" class="btn btn-danger">Delete Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

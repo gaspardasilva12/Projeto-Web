@@ -69,6 +69,16 @@
         margin-left: 10px;
     }
 
+    .btn-atualizar {
+        background: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 18px; 
+        font-size: 15px;
+        margin-left: 10px;
+    }
+
     .no-ongs {
         text-align: center;
         color: #888;
@@ -97,10 +107,16 @@
                 <div><strong>Email:</strong> {{ ong.email }}</div>
                 <div><strong>Phone:</strong> {{ ong.telefone }}</div>
                 <div><strong>Address:</strong> {{ ong.endereco }}</div>
-                <form method="POST" action="{{ url_for('views.excluir_ong') }}" style="display:inline;">
-                    <input type="hidden" name="ong_id" value="{{ ong.id }}">
-                    <button type="button" class="btn-excluir" onclick="confirmarExclusao(this.form)">Delete</button>
-                </form>
+                <div style="margin-top: 10px; text-align: right;">
+                    <form method="GET" action="{{ url_for('views.atualizar_ong') }}" style="display:inline;">
+                        <input type="hidden" name="ong_id" value="{{ ong.id }}">
+                        <button type="submit" class="btn-atualizar">Update</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('views.excluir_ong') }}" style="display:inline;">
+                        <input type="hidden" name="ong_id" value="{{ ong.id }}">
+                        <button type="button" class="btn-excluir" onclick="confirmarExclusao(this.form)">Delete</button>
+                    </form>
+                </div>
             </li>
             {% else %}
             <li class="no-ongs">No NGOs registered.</li>
